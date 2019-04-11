@@ -7,6 +7,7 @@ import buyManage from '../views/buyManage/router'
 import sellManage from '../views/sellManage/router'
 import userManage from '../views/userManage/router'
 import otherManage from '../views/otherManage/router'
+import userCenter from '../views/userCenter/router'
 // import complainManage from '../views/complainManage/router'
 
 Vue.use(Router)
@@ -22,7 +23,8 @@ export default new Router({
 	...buyManage,
 	...sellManage,
 	...userManage,
-	...otherManage
+	...otherManage,
+	...userCenter
 	// ...complainManage
 	]
 })

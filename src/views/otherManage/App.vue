@@ -12,9 +12,13 @@
       <div id="coins2select">
         <div class="coin" v-for="(item, i) in coinList" :key="i" @click="selectCoins(i)" :class="item.isSelected?'selected':''">
           <div class="selectedCoin" v-if="item.isSelected"></div>
-          <img :src="item.img" :alt="item.name">
-          <p>{{item.abName}}</p>
-          <p>{{item.name}}</p>
+          <div class="coin_img">
+            <img :src="item.img" :alt="item.name">
+          </div>
+          <div class="coin_p">
+            <p>{{item.abName}}</p>
+            <p>{{item.name}}</p>
+          </div>
         </div>
         <div id="clearFloat"></div>
       </div>
@@ -249,35 +253,33 @@
   }
   #coins2select {
     margin-top: 20px;
+    display: flex;
+    max-width:100%;
+    flex-wrap: wrap;
   }
   .coin {
     width: 150px;
-    height: 40px;
     background-color: #fff;
     padding: 10px;
     cursor: pointer;
-    float: left;
-    margin-right: 10px;
+    margin: 10px;
     margin-bottom: 10px;
     position: relative;
+    display:flex;
   }
   .coin:hover {
-    width: 148px;
-    height: 38px;
     box-shadow: 3px 3px 3px #ccc;
-    border: 1px solid #2FCBEA;
+    /*border: 1px solid #2FCBEA;*/
+  }
+  .coin_p {
+    padding-left:10px;
   }
   .coin img {
     width: 40px;
     height: 40px;
-    display: block;
-    float: left;
   }
   .coin p {
     width: 98px;
-    display: block;
-    float: left;
-    padding-left: 10px;
     color: #646464;
     font-size: 16px;
   }
@@ -290,8 +292,6 @@
   }
   .selected {
     border: 1px solid #2FCBEA;
-    width: 148px;
-    height: 38px;
     box-shadow: 3px 3px 3px #ccc;
   }
   .selectedCoin {

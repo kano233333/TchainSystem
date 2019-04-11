@@ -9,11 +9,11 @@
       <p>{{adminName}}</p>
       <div id="routers">
             <router-link v-for="(route, index) in routers" :key="index" :to="route.link">
-              <i class="iconfont" :class="route.icon"></i>
+              <sicon :name="route.icon" scale="2" class="sicon"></sicon>
               <span>{{route.name}}</span>
             </router-link>
             <a @click="loginOut">
-              <i class="iconfont icon-tuichu"></i>
+              <sicon class="sicon" name="tuichu" scale="2"></sicon>
               <span>退出登录</span>
             </a>
       </div>
@@ -27,38 +27,7 @@
       return {
         isShowNav: true,
         adminName: '管理员',
-        routers: [
-        {
-          name: '交易管理',
-          link: 'transactionManage',
-          icon: 'icon-icon'
-        },
-        {
-          name: '买入管理',
-          link: 'buyManage',
-          icon: 'icon-mai'
-        },
-        {
-          name: '卖出管理',
-          link: 'sellManage',
-          icon: 'icon-mai1'
-        },
-        {
-          name: '用户管理',
-          link: 'userManage',
-          icon: 'icon-yonghu1'
-        },
-        {
-          name: '其他管理',
-          link: 'otherManage',
-          icon: 'icon-tousu'
-        }
-        // {
-        //   name: '退出登录',
-        //   link: 'login',
-        //   icon: 'icon-tuichu'
-        // }
-        ]
+        routers: []
       }
     },
     methods: {
@@ -71,7 +40,34 @@
         .catch(function (error) {
           alert("退出登录失败" + error);
         });
+      },
+      setBar(){
+        var sData = sessionStorage.getItem('userData');
+        if(sData==null){
+          this.$Message.info('请先登录');
+          this.$router.push('/');
+          return;
+        }
+
+        var sessionData = JSON.parse(sData).data.data;
+        switch(sessionData.permission){
+          case 0:
+            this.$Message.info('账号已被冻结');
+            this.$router.push('/');
+            break;
+          case 1:
+            this.routers = this.constCom.bar.user;
+            break;
+          case 2:
+            this.routers = this.constCom.bar.manage;
+            break;
+          default:
+            this.$router.push('/');
+        }
       }
+    },
+    created(){
+      this.setBar()
     }
   }
 </script>
@@ -158,10 +154,10 @@
   }
   #sideBar a:hover,
   #sideBar a:hover span,
-  #sideBar a:hover i,
+  #sideBar a:hover .sicon,
   .router-link-active,
   .router-link-active span,
-  .router-link-active i {
+  .router-link-active .sicon {
     background-color: #2FCCEB;
     color: #fff;
   }
@@ -188,5 +184,10 @@
   #sideBar a {
     font-size: 16px;
     line-height: 40px;
+  }
+  .sicon {
+    color:#111;
+    position:relative;
+    top:3px;
   }
 </style>

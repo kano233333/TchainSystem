@@ -14,7 +14,10 @@ Vue.use(lib)
 import api from './api'
 Vue.use(api)
 
-console.log(global.router);
+import "./global/css/common.css"
+
+import constCom from './global/const'
+Vue.prototype.constCom = constCom;
 /* eslint-disable no-new */
 new Vue({
   el: '#app',

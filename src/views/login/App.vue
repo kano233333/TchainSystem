@@ -1,20 +1,49 @@
 <template>
   <div class="login">
-    <div id="loginDiv">
+    <div id="loginDiv" v-show="isLogin">
       <div id="headDiv">
         <h3>后台登录</h3>
         <p>Login To System</p>
       </div>
       <div id="loginInput">
         <div class="inputDiv">
-          <i class="iconfont icon-yonghu"></i>
-          <input type="text" v-model="username" value="" placeholder="请输入账号">
+          <Input type="text" v-model="username" value="" placeholder="请输入账号">
+            <Icon type="ios-contact" slot="prefix" />
+          </Input>
         </div>
         <div class="inputDiv">
-          <i class="iconfont icon-mima"></i>
-          <input type="password" v-model="psd" value="" placeholder="请输入密码">
+          <Input type="password" v-model="psd" value="" placeholder="请输入密码">
+            <Icon type="ios-key" slot="prefix" />
+          </Input>
         </div>
-        <input type="button" name="" value="立即登录" @click="login">
+        <input type="button" class="login_btn" name="" value="立即登录" @click="login">
+        <input type="button" class="login_btn" name="" value="注册" @click="shift">
+      </div>
+    </div>
+
+    <div id="loginDiv" v-show="!isLogin">
+      <div id="headDiv">
+        <h3>后台注册</h3>
+        <p>Register To System</p>
+      </div>
+      <div id="loginInput">
+        <div class="inputDiv">
+          <Input type="text" v-model="numb" value="" placeholder="请输入手机号">
+          <Icon type="ios-contact" slot="prefix" />
+          </Input>
+        </div>
+        <div class="inputDiv">
+          <Input type="text" v-model="username2" value="" placeholder="请输入账号">
+          <Icon type="ios-contact" slot="prefix" />
+          </Input>
+        </div>
+        <div class="inputDiv">
+          <Input type="password" v-model="psd2" value="" placeholder="请输入密码">
+          <Icon type="ios-key" slot="prefix" />
+          </Input>
+        </div>
+        <input type="button" class="login_btn" name="" value="立即注册" @click="register">
+        <input type="button" class="login_btn" name="" value="登录" @click="shift">
       </div>
     </div>
     <div id="bottom">
@@ -47,13 +76,13 @@
   }
   #loginDiv {
     width: 400px;
-    height: 330px;
     margin: 0 auto;
     margin-top: 20vh;
     background: #fff;
     border-radius: 10px;
     position: relative;
     z-index: 99;
+    animation: 0.8s show_scale forwards;
   }
   #headDiv {
     width: 100%;
@@ -76,13 +105,17 @@
   }
   #loginInput {
     width: 250px;
-    height: 200px;
-    margin: 20px auto;
+    margin: 0 auto;
+    padding:20px 0;
   }
   .inputDiv {
     width: 270px;
     height: 25px;
     margin-top: 20px;
+  }
+  .inputDiv  input {
+    display: inline-block;
+    width:80%;
   }
   #loginInput input {
     width: 230px;
@@ -90,19 +123,7 @@
     border: 0;
     border-bottom: 1px solid #ccc;
   }
-  .iconfont {
-    color: #8BAEC9;
-    font-size: 20px;
-    line-height: 25px;
-    padding-right: 5px;
-    display: inline-block;
-    vertical-align: middle;
-  }
-  #loginInput input:focus {
-    /*border: 0;*/
-    outline: 0;
-  }
-  #loginInput input:nth-child(3) {
+  #loginInput .login_btn {
     width: 150px;
     height: 35px;
     display: block;
@@ -112,8 +133,9 @@
     border: 0;
     border-radius: 20px;
     cursor: pointer;
+    outline: none;
   }
-  #loginInput input:nth-child(3):hover {
+  #loginInput .login_btn:hover {
     background: #1288FB;
     box-shadow: 0 4px 5px #AAD9FF;
   }
@@ -170,12 +192,24 @@
     data() {
       return {
         username: '',
-        psd: ''
+        psd: '',
+        isLogin:true,
+        username2:'',
+        psd2:'',
+        numb:''
       }
     },
     components: {},
     methods: {
       login: function () {
+        if(this.username==''){
+          this.$Message.info('请输入用户名')
+          return;
+        }
+        if(this.psd==''){
+          this.$Message.info('请输入密码')
+          return;
+        }
         var user = {
           username: this.username,
           password: this.psd
@@ -183,20 +217,21 @@
         var that = this;
         this.$ajax.post(that.$ip + '/login', user)
         .then(function (res) {
-          res.data.code==200?that.getUserInfo():alert('登录失败');
+          res.data.code==200?that.getUserInfo():that.$Message.info('登录失败');
         })
         .catch(function (error) {
-          alert('登录失败：'+error);
+          that.$Message.info('登录失败：'+error);
         });
       },
       getUserInfo: function () {
         var that = this;
         this.$ajax(that.$ip + '/show_me')
         .then(function (res) {
-          res.data.code==200?that.saveUserData(res):alert('获取管理员信息失败！');
+          console.log(res)
+          res.data.code==200?that.saveUserData(res):that.$Message.info('获取信息失败！');
         })
         .catch(function (error) {
-          alert('获取管理员信息失败：'+error);
+          that.$Message.info('获取信息失败：'+error);
         });
       },
       saveUserData: function (data) {
@@ -204,6 +239,39 @@
           sessionStorage.setItem('userData', JSON.stringify(data));
           this.$router.push('/transactionManage');
         };
+      },
+      shift(){
+        this.isLogin = !this.isLogin;
+      },
+      register(){
+        if(this.numb==''){
+          this.$Message.info('请输入手机号')
+          return;
+        }
+        if(this.username2==''){
+          this.$Message.info('请输入用户名')
+          return;
+        }
+        if(this.psd2==''){
+          this.$Message.info('请输入密码')
+          return;
+        }
+        var user = {
+          username: this.username2,
+          password: this.psd2,
+          number:this.numb
+        };
+        var that = this;
+        this.$ajax.post(that.$ip + '/register', user)
+          .then(function (res) {
+            if(res.data.code==200){
+              that.$Message.info('注册成功请登录');
+              that.isLogin = true;
+            }
+          })
+          .catch(function (error) {
+            that.$Message.info('登录失败：'+error);
+          });
       }
     }
   }
