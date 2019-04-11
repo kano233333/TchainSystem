@@ -89,7 +89,7 @@ export default {
     width: 100%;
     max-width: 100%;
     min-width: 700px;
-    height: 100%;
+    min-height: 100%;
     position: absolute;
     right: 0;
     background: #F2F1F6;
