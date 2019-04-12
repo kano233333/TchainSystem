@@ -129,7 +129,7 @@
         switch(this.theHeader) {
           case '交易信息':
             this.choose = 2;
-            this.getDataApi = that.$ip + '/deal2' + this.coinChoose + '?choose=' + this.choose + '&page=' + (this.page * this.limit) + '&limit=' + this.limit;
+            this.getDataApi = that.$ip + '/hang_sell/0' + this.coinChoose + '?choose=' + this.choose + '&page=' + (this.page * this.limit) + '&limit=' + this.limit;
             this.isShowBtn = false;
             this.searchChoose = 1;
             this.searchPlh = '输入订单号搜索';
@@ -139,7 +139,7 @@
             break;
           case '买入信息':
           this.choose = 1;
-            this.getDataApi = that.$ip + '/hang_sell/0' + this.coinChoose + '?choose=' + this.choose + '&page=' + (this.page * this.limit) + '&limit=' + this.limit;
+            this.getDataApi = that.$ip + '/transcation/1' + this.coinChoose + '?choose=' + this.choose + '&page=' + (this.page * this.limit) + '&limit=' + this.limit;
             this.isShowBtn = false;
             this.searchChoose = 0;
             this.searchPlh = '输入订单号搜索';
@@ -149,7 +149,7 @@
             break;
           case '卖出信息':
           this.choose = 0;
-            this.getDataApi = that.$ip + '/hang_sell/0' + this.coinChoose + '?choose=' + this.choose + '&page=' + (this.page * this.limit) + '&limit=' + this.limit;
+            this.getDataApi = that.$ip + '/transcation/0' + this.coinChoose + '?choose=' + this.choose + '&page=' + (this.page * this.limit) + '&limit=' + this.limit;
             this.isShowBtn = false;
             this.searchChoose = 0;
             this.searchPlh = '输入订单号搜索';

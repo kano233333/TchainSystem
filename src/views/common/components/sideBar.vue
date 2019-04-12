@@ -26,7 +26,7 @@
     data() {
       return {
         isShowNav: true,
-        adminName: '管理员',
+        adminName: '',
         routers: []
       }
     },
@@ -57,9 +57,11 @@
             break;
           case 1:
             this.routers = this.constCom.bar.user;
+            this.adminName = '用户';
             break;
           case 2:
             this.routers = this.constCom.bar.manage;
+            this.adminName = '管理员';
             break;
           default:
             this.$router.push('/');
@@ -75,7 +77,6 @@
   * {
     margin: 0 auto;
     padding: 0;
-    /*overflow-y: hidden;*/
     list-style: none;
   }
   a,
