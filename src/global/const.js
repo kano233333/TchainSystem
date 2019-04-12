@@ -30,17 +30,17 @@ const common = {
     user:[
       {
         name: '交易信息',
-        link: 'transactionManage',
+        link: 'userTransaction',
         icon: 'jiaoyi'
       },
       {
         name: '买入信息',
-        link: 'buyManage',
+        link: 'userBuy',
         icon: 'mai1'
       },
       {
         name: '卖出信息',
-        link: 'sellManage',
+        link: 'userSell',
         icon: 'mai2'
       },
       {

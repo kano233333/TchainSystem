@@ -10,6 +10,10 @@ import otherManage from '../views/otherManage/router'
 import userCenter from '../views/userCenter/router'
 // import complainManage from '../views/complainManage/router'
 
+import userBuy from '../views/userBuy/router'
+import userSell from '../views/userSell/router'
+import userTransaction from '../views/userTransaction/router'
+
 Vue.use(Router)
 
 export default new Router({
@@ -24,7 +28,10 @@ export default new Router({
 	...sellManage,
 	...userManage,
 	...otherManage,
-	...userCenter
+	...userCenter,
+	...userBuy,
+	...userSell,
+	...userTransaction
 	// ...complainManage
 	]
 })
