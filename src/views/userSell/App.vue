@@ -5,11 +5,13 @@
 </template>
 
 <script>
-import dataTable from '../common/components/usedataTable.vue'
+import dataTable from '../common/components/ivewTable.vue'
+// import dataTable from '../common/components/usedataTable.vue'
 export default {
   data() {
     return {
-      theHeader: '卖出信息',
+      // theHeader: '卖出信息',
+      theHeader: '交易管理',
     }
   },
   name: 'App',

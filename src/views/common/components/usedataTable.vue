@@ -40,7 +40,14 @@
     </table>
     <div class="splitPage" v-if="isShowSplitPage">
       <nav aria-label="Page navigation">
-        <button type="button" v-if="isShowAddBtn">添加</button>
+        <button type="button" v-if="isShowAddBtn"  @click="modalShow = true">添加</button>
+        <Modal v-model="modalShow" title="添加挂售信息" @on-ok="addHang" width="350px">
+          <ul>
+            <li><p>数量</p><input type="text" v-model="sellnumber" placeholder="请输入挂售数量"></li>
+            <li><p>价格</p><input type="text" v-model="sellprice" placeholder="请输入挂售价格"></li>
+            <li><p>最低价</p><input type="text" v-model="sellowerprice" placeholder="请输入挂售最低价格"></li>
+          </ul>
+        </Modal>
         <ul class="pagination">
           <li class="disabled">
             <a href="javascript:void(0);" aria-label="Previous" @click="turnByPage">
@@ -69,6 +76,12 @@
   export default {
     data() {
       return {
+        modalShow:false,
+        sellowerprice: '',
+        sellnumber: '',
+        sellprice: '',
+        selltype: 1,
+
         isShowBtn: false,
         isShowEdit: false,
         isShowBlock: false,
@@ -128,18 +141,19 @@
         this.theData = [];
         switch(this.theHeader) {
           case '交易信息':
-            this.choose = 2;
-            this.getDataApi = that.$ip + '/hang_sell/0' + this.coinChoose + '?choose=' + this.choose + '&page=' + (this.page * this.limit) + '&limit=' + this.limit;
+            this.choose = 1;
+             this.getDataApi = that.$ip + '/show_me2' + this.coinChoose + '?page=' + (this.page * this.limit) + '&limit=' + this.limit;
             this.isShowBtn = false;
             this.searchChoose = 1;
             this.searchPlh = '输入订单号搜索';
             this.isShowSearchSort = true;
+            this.isShowAddBtn = true;
             this.isShowCoinSelect = true;
             this.searchUserChos = 3;
+            console.log(this.isShowSplitPage)
             break;
           case '买入信息':
-          this.choose = 1;
-            this.getDataApi = that.$ip + '/transcation/1' + this.coinChoose + '?choose=' + this.choose + '&page=' + (this.page * this.limit) + '&limit=' + this.limit;
+            this.getDataApi = that.$ip + '/transcation/1' + '?page=' + (this.page * this.limit) + '&limit=' + this.limit;
             this.isShowBtn = false;
             this.searchChoose = 0;
             this.searchPlh = '输入订单号搜索';
@@ -149,7 +163,7 @@
             break;
           case '卖出信息':
           this.choose = 0;
-            this.getDataApi = that.$ip + '/transcation/0' + this.coinChoose + '?choose=' + this.choose + '&page=' + (this.page * this.limit) + '&limit=' + this.limit;
+            this.getDataApi = that.$ip + '/transcation/0' + '?page=' + (this.page * this.limit) + '&limit=' + this.limit;
             this.isShowBtn = false;
             this.searchChoose = 0;
             this.searchPlh = '输入订单号搜索';
@@ -393,7 +407,7 @@
         // 初始化分页
         // 改变不可点击的按钮样式
         if (this.totalPage == 1) {
-          this.isShowSplitPage = false;
+          //this.isShowSplitPage = false;
         } else {
           var allPageBtn = document.getElementsByClassName('pagination')[0].getElementsByTagName('li');
           for (var i = 0; i < allPageBtn.length; i++) {
@@ -480,6 +494,24 @@
           };
         };
         this.init();
+      },
+      addHang(){
+        this.$ajax.post(this.$ip + '/hang_sell/1', {
+          type: this.selltype,
+          amount: this.sellnumber,
+          the_unit_price: this.sellprice,
+          the_lower_transaction: this.sellowerprice
+        }).then((data)=>{
+          console.log(data)
+          var _data = data.data;
+          if(_data.code==200){
+            this.$Message.info(_data.msg)
+          }else{
+            this.$Message.info('错误')
+          }
+        }).catch(()=>{
+          this.$Message.info('失败');
+        })
       }
     }
   }
@@ -610,6 +642,7 @@
     width: 80px;
     height: 30px;
     border: 0;
+    outline: none;
     border-radius: 7px;
     background: #2FCCEB;
     cursor: pointer;
@@ -620,6 +653,22 @@
   }
   .splitPage button:hover {
     background: #1DCAD1;
+  }
+  .ivu-modal-wrap ul li{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 40px;
+  }
+  .ivu-modal-wrap ul li p{
+    width: 50px;
+    font-size: 14px;
+    font-weight: bold;
+  }
+  .ivu-modal-wrap ul li input{
+    height: 30px;
+    width: 200px;
+    padding-left: 10px;
   }
   .splitPage nav {
     height: 30px;

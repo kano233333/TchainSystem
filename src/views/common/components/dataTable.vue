@@ -138,7 +138,7 @@
             this.searchUserChos = 3;
             break;
           case '买入管理':
-          this.choose = 1;
+          this.choose = 1; 
             this.getDataApi = that.$ip + '/hang_sell/0' + this.coinChoose + '?choose=' + this.choose + '&page=' + (this.page * this.limit) + '&limit=' + this.limit;
             this.isShowBtn = false;
             this.searchChoose = 0;
@@ -268,6 +268,7 @@
                 that.theData.push(createData(res.data.data.info));
               };
               that.checkPage();
+              
             } else {
               that.$api.alert('error', res.data.msg);
             };
@@ -614,8 +615,6 @@
     outline: none;
   }
   .splitPage {
-    /*width: 480px;*/
-    /*width: 100%;*/
     height: 30px;
     margin: 0 auto;
     margin-top: 30px;
@@ -624,6 +623,7 @@
     width: 80px;
     height: 30px;
     border: 0;
+    outline: none;
     border-radius: 7px;
     background: #2FCCEB;
     cursor: pointer;
