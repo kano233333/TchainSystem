@@ -45,7 +45,7 @@ const common = {
       },
       {
         name: 'k线条',
-        link: 'kcharts',
+        link: 'KLine',
         icon: 'xiantu'
       },
       {
@@ -68,6 +68,236 @@ const common = {
       "username": '昵称',
       "vipLevel": '会员等级'
     }
+  },
+  manageTable:{
+    transactionManage:[
+    {
+      title: '买家',
+      key: 'buyer'
+    },
+    {
+      title: '卖家',
+      key: 'seller'
+    },
+    {
+      title: '数量',
+      key: 'amount'
+    },
+    {
+      title: '单价',
+      key: 'price'
+    },
+    {
+      title: '总额',
+      key: 'totalPrice'
+    },
+    {
+      title: '类别',
+      key: 'type'
+    },
+    {
+      title: '完成时间',
+      key: 'complishTime',
+      width: 200
+    }],
+    buyManage:[{
+      title: '交易ID',
+      key: 'id'
+    },{
+      title: '发布者',
+      key: 'publisher'
+    },{
+      title: '数量',
+      key: 'amount'
+    },{
+      title: '单价',
+      key: 'price'
+    },{
+      title: '限额',
+      key: 'limitPrice'
+    },{
+      title: '总额',
+      key: 'totalPrice'
+    },{
+      title: '发布时间',
+      key: 'publishTime',
+      width: 200
+    }],
+    sellManage:[{
+      title: '交易ID',
+      key: 'id'
+    },{
+      title: '发布者',
+      key: 'publisher'
+    },{
+      title: '数量',
+      key: 'amount'
+    },{
+      title: '单价',
+      key: 'price'
+    },{
+      title: '限额',
+      key: 'limitPrice'
+    },{
+      title: '总额',
+      key: 'totalPrice'
+    },{
+      title: '发布时间',
+      key: 'publishTime',
+      width: 200
+    }],
+    userManage:[
+    {
+      title: '用户名',
+      key: 'username',
+      width: 80
+    },{
+      title: '真实姓名',
+      key: 'real_name',
+    },{
+      title: '手机号',
+      key: 'phone',
+      width: 80
+    },{
+      title: '身份证号',
+      key: 'ID_card',
+    },{
+      title: '公钥',
+      key: 'public_key',
+    },{
+      title: '余额',
+      key: 'remaining',
+    },{
+      title: 'TRC',
+      key: 'Tang',
+    },{
+      title: 'BCC',
+      key: 'BCC',
+    }
+    ,{
+      title: 'BTC',
+      key: 'BTC',
+    },{
+      title: 'EOS',
+      key: 'EOS',
+    },{
+      title: 'ETH',
+      key: 'ETH',
+    },{
+      title: '会员等级',
+      key: 'vipLevel'
+    },{
+      title: '注册时间',
+      key: 'regiestTime',
+      width: 100
+    },{
+      title: '操作',
+      key: 'dom',
+      width: 60
+    }
+    ]
+  },
+  userTable: {
+    userTransaction:[
+    {
+      title: '买家',
+      key: 'buyer'
+    },
+    {
+      title: '卖家',
+      key: 'seller'
+    },
+    {
+      title: '数量',
+      key: 'amount'
+    },
+    {
+      title: '单价',
+      key: 'price'
+    },
+    {
+      title: '总额',
+      key: 'totalPrice'
+    },
+    {
+      title: '类别',
+      key: 'type'
+    },
+    {
+      title: '完成时间',
+      key: 'complishTime',
+      width: 200
+    }],
+    userBuy:[{
+      title: '交易ID',
+      key: 'id'
+    },{
+      title: '发布者',
+      key: 'publisher'
+    },{
+      title: '数量',
+      key: 'amount'
+    },{
+      title: '单价',
+      key: 'price'
+    },{
+      title: '限额',
+      key: 'limitPrice'
+    },{
+      title: '总额',
+      key: 'totalPrice'
+    },{
+      title: '发布时间',
+      key: 'publishTime',
+      width: 200
+    }],
+    userSell:[{
+      title: '交易ID',
+      key: 'id'
+    },{
+      title: '发布者',
+      key: 'publisher'
+    },{
+      title: '数量',
+      key: 'amount'
+    },{
+      title: '单价',
+      key: 'price'
+    },{
+      title: '限额',
+      key: 'limitPrice'
+    },{
+      title: '总额',
+      key: 'totalPrice'
+    },{
+      title: '发布时间',
+      key: 'publishTime',
+      width: 200
+    }]
+  },
+  searchTable:{
+    IDsearch:[{
+      title: '',
+      key: ''
+    },{
+      title: '',
+      key: ''
+    },{
+      title: '',
+      key: ''
+    },{
+      title: '',
+      key: ''
+    },{
+      title: '',
+      key: ''
+    },{
+      title: '',
+      key: ''
+    },{
+      title: '',
+      key: ''
+    }]
   }
 }
 

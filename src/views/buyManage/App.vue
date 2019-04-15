@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import dataTable from '../common/components/dataTable.vue'
+import dataTable from '../common/components/ivewTable.vue'
 export default {
   data() {
     return {
