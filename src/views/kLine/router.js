@@ -1,6 +1,6 @@
 import App from './App';
 
 export default [{
-  path: '/kCharts',
+  path: '/kLine',
   component: App
 }]
