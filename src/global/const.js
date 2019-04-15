@@ -45,7 +45,7 @@ const common = {
       },
       {
         name: 'k线条',
-        link: 'userManage',
+        link: 'KLine',
         icon: 'xiantu'
       },
       {
@@ -120,7 +120,8 @@ const common = {
       key: 'totalPrice'
     },{
       title: '发布时间',
-      key: 'publishTime'
+      key: 'publishTime',
+      width: 200
     }],
     sellManage:[{
       title: '交易ID',
@@ -142,51 +143,59 @@ const common = {
       key: 'totalPrice'
     },{
       title: '发布时间',
-      key: 'publishTime'
+      key: 'publishTime',
+      width: 200
     }],
-    userManage:[{
+    userManage:[
+    {
       title: '用户名',
-      key: 'usernam'
+      key: 'username',
+      width: 80
     },{
       title: '真实姓名',
-      key: 'real_name'
+      key: 'real_name',
     },{
       title: '手机号',
-      key: 'phone'
+      key: 'phone',
+      width: 80
     },{
       title: '身份证号',
-      key: 'ID_card'
+      key: 'ID_card',
     },{
       title: '公钥',
-      key: 'public_key'
+      key: 'public_key',
     },{
       title: '余额',
-      key: 'remaining'
-    },,{
+      key: 'remaining',
+    },{
       title: 'TRC',
-      key: 'Tang'
+      key: 'Tang',
     },{
       title: 'BCC',
-      key: 'BCC'
-    },{
+      key: 'BCC',
+    }
+    ,{
       title: 'BTC',
-      key: 'BTC'
+      key: 'BTC',
     },{
       title: 'EOS',
-      key: 'EOS'
+      key: 'EOS',
     },{
       title: 'ETH',
-      key: 'ETH'
+      key: 'ETH',
     },{
       title: '会员等级',
       key: 'vipLevel'
     },{
       title: '注册时间',
-      key: 'regiestTime'
+      key: 'regiestTime',
+      width: 100
     },{
       title: '操作',
-      key: 'dom'
-    }]
+      key: 'dom',
+      width: 60
+    }
+    ]
   },
   userTable: {
     userTransaction:[
@@ -217,7 +226,7 @@ const common = {
     {
       title: '完成时间',
       key: 'complishTime',
-      className: 'demo-table-info-column'
+      width: 200
     }],
     userBuy:[{
       title: '交易ID',
@@ -239,7 +248,8 @@ const common = {
       key: 'totalPrice'
     },{
       title: '发布时间',
-      key: 'publishTime'
+      key: 'publishTime',
+      width: 200
     }],
     userSell:[{
       title: '交易ID',
@@ -261,7 +271,8 @@ const common = {
       key: 'totalPrice'
     },{
       title: '发布时间',
-      key: 'publishTime'
+      key: 'publishTime',
+      width: 200
     }]
   },
   searchTable:{

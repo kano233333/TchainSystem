@@ -1,6 +1,7 @@
 <template>
-  <div class="buyManage">
+  <div class="KLine">
     <dataTable :theHeader="theHeader"></dataTable>
+    另一个组件导入
   </div>
 </template>
 
@@ -9,7 +10,7 @@ import dataTable from '../common/components/ivewTable.vue'
 export default {
   data() {
     return {
-      theHeader: '买入管理'
+      theHeader: 'K线条'
     }
   },
   name: 'App',
@@ -20,7 +21,7 @@ export default {
 </script>
 
 <style type="text/css" media="screen" scoped>
-  .buyManage {
+  .KLine {
     width: 75vw;
     max-width: calc(100vw - 150px);
     margin: 20px auto;
