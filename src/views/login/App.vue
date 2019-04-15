@@ -227,7 +227,6 @@
         var that = this;
         this.$ajax(that.$ip + '/show_me')
         .then(function (res) {
-          console.log(res)
           res.data.code==200?that.saveUserData(res):that.$Message.info('获取信息失败！');
         })
         .catch(function (error) {
@@ -236,8 +235,16 @@
       },
       saveUserData: function (data) {
         if (data) {
+          var permission = data.data.data.permission;
           sessionStorage.setItem('userData', JSON.stringify(data));
-          this.$router.push('/transactionManage');
+          switch(permission){
+            case 1:
+              this.$router.push('/userTransaction');
+              break;
+            case 2:
+              this.$router.push('/transactionManage');
+              break;
+          }
         };
       },
       shift(){
