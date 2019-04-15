@@ -29,7 +29,7 @@ const common = {
       ],
     user:[
       {
-        name: '交易信息',
+        name: '挂售信息',
         link: 'userTransaction',
         icon: 'jiaoyi'
       },
@@ -45,7 +45,7 @@ const common = {
       },
       {
         name: 'k线条',
-        link: 'userManage',
+        link: 'kcharts',
         icon: 'xiantu'
       },
       {

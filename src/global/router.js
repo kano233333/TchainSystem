@@ -13,6 +13,7 @@ import userCenter from '../views/userCenter/router'
 import userBuy from '../views/userBuy/router'
 import userSell from '../views/userSell/router'
 import userTransaction from '../views/userTransaction/router'
+import kCharts from '../views/kCharts/router'
 
 Vue.use(Router)
 
@@ -31,7 +32,8 @@ export default new Router({
 	...userCenter,
 	...userBuy,
 	...userSell,
-	...userTransaction
+	...userTransaction,
+	...kCharts
 	// ...complainManage
 	]
 })

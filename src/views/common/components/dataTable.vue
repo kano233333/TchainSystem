@@ -6,12 +6,13 @@
         <option v-for="(item, index) in coinList" :value="item.value">{{item.abName}}</option>
       </select>
       <div id="search">
-          <button type="button" @click="search"><img src="../../../assets/search.png" alt="搜索"></button>
-          <input type="text" name="ID" value="" :placeholder="searchPlh" ref="searchKey">
-          <div id="searchSort" v-if="isShowSearchSort">
-            <button type="button" @click="searchByUsername" :class="searchIsId? '':'chosenSort'">用户名</button>
-            <button type="button" @click="searchById" :class="searchIsId? 'chosenSort':''">订单号</button>
-          </div>
+        <Search></Search>
+          <!--<button type="button" @click="search"><img src="../../../assets/search.png" alt="搜索"></button>-->
+          <!--<input type="text" name="ID" value="" :placeholder="searchPlh" ref="searchKey">-->
+          <!--<div id="searchSort" v-if="isShowSearchSort">-->
+            <!--<button type="button" @click="searchByUsername" :class="searchIsId? '':'chosenSort'">用户名</button>-->
+            <!--<button type="button" @click="searchById" :class="searchIsId? 'chosenSort':''">订单号</button>-->
+          <!--</div>-->
       </div>
     </div>
     <table>
@@ -66,7 +67,12 @@
 </template>
 
 <script>
+  import Search from '../components/search'
+
   export default {
+    components:{
+      Search
+    },
     data() {
       return {
         isShowBtn: false,
@@ -522,8 +528,6 @@
     outline: none;
   }
   #search {
-    width: 400px;
-    height: 40px;
     float: right;
     position: relative;
   }

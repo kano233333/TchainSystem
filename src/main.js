@@ -18,6 +18,9 @@ import "./global/css/common.css"
 
 import constCom from './global/const'
 Vue.prototype.constCom = constCom;
+
+import echarts from 'echarts'
+Vue.prototype.$echarts = echarts
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
