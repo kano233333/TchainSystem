@@ -2,9 +2,9 @@
   <div class="dataTable">
     <div id="headAndSearch">
       <h1>{{theHeader}}</h1>
-      <div class="select" v-if="isShowCoinSelect">
+      <div class="select" v-show="isShowCoinSelect">
         <Select v-model="modelo"  @on-change="changeCoin" style="width: 95px; margin-left: 5px; text-align: center;">
-          <Option v-for="(item,index) in coinList" :value="item.value">{{item.abName}}</Option>
+          <Option v-for="(item,index) in coinList" :value="item.value" :key="index">{{item.abName}}</Option>
         </Select>
       </div>
       <div class="searches">
@@ -21,6 +21,32 @@
         <Input placeholder="请输入用户名" v-if="istradeAnother" v-model="searchValue"></Input>
         <img src="../../../assets/search.png" alt="搜索" @click="search" v-if="isSuresearch">
       </div>
+      <div class="AddHangSell" v-if="isAddhangsell">
+        <Button type="primary" @click="modal1 = true">添加挂售信息</Button>
+        <Modal v-model="modal1" title="请发布您的挂售信息" :loading="addloading" @on-cancel="AddClear" :footer-hide="true" width="320">
+            <Form :model="formItem" :label-width="50">
+              <FormItem label="数量">
+                  <Input v-model="formItem.amount" placeholder="请输入数量"></Input>
+              </FormItem>
+              <FormItem label="单价">
+                  <Input v-model="formItem.unitPrice" placeholder="请输入单价"></Input>
+              </FormItem>
+              <FormItem label="限额">
+                  <Input v-model="formItem.limitPrice" placeholder=请输入限额></Input>
+              </FormItem>
+              <FormItem label="挂售类型" :label-width="70">
+                  <RadioGroup v-model="radioChoic" style="margin-left: 25px;">
+                      <Radio label="1">卖出</Radio>
+                      <Radio label="0">买入</Radio>
+                  </RadioGroup>
+              </FormItem>
+              <FormItem style="margin-left: 120px;">
+                  <Button type="text" @click="addcancel">取消</Button>
+                  <Button type="primary" @click="addOK">确定</Button>
+              </FormItem>
+            </Form>
+        </Modal>
+      </div>
     </div>
     <div class="ivuTable">
        <Table size="small" :columns="columns" :data="datas"></Table>
@@ -36,9 +62,12 @@
     data(){
       return {
         modelo: 0,
+        modal1:false,
+        addloading: true,
         searchfome: '订单号',
         searchtype: '1',
         searchValue: '',
+        radioChoic: '1',
         columns: [],
         datas: [],
         page: 1,
@@ -53,6 +82,7 @@
         istradeSearch: false,
         istradeAnother: false,
         isSuresearch: false,
+        isAddhangsell: false,
         coinList: [
         {
           name: '唐人链',
@@ -78,6 +108,114 @@
           name: '柚子币',
           abName: 'EOS',
           value: 4
+        }],
+        formItem: {
+            amount: '',
+            unitPrice: '',
+            limitPrice: ''
+        },
+        userManage:[
+        {
+          title: '用户名',
+          key: 'username',
+          width: 80
+        },{
+          title: '真实姓名',
+          key: 'real_name',
+        },{
+          title: '手机号',
+          key: 'phone',
+          width: 80
+        },{
+          title: '身份证号',
+          key: 'ID_card',
+        },{
+          title: '公钥',
+          key: 'public_key',
+        },{
+          title: '余额',
+          key: 'remaining',
+        },{
+          title: 'TRC',
+          key: 'Tang',
+        },{
+          title: 'BCC',
+          key: 'BCC',
+        },{
+          title: 'BTC',
+          key: 'BTC',
+        },{
+          title: 'EOS',
+          key: 'EOS',
+        },{
+          title: 'ETH',
+          key: 'ETH',
+        },{
+          title: '会员等级',
+          key: 'vipLevel'
+        },{
+          title: '注册时间',
+          key: 'regiestTime',
+          width: 100
+        },{
+          title: '操作',
+          key: 'dom',
+          width: 60,
+          align: 'center',
+          render: (h, params) => {
+            return h('div', [
+                h('Icon', {
+                    props: {
+                        type: 'md-close-circle',
+                        size: 22,
+                        color: '#2b85e4'
+                    },
+                    on: {
+                        click: () => {
+                            this.deleteData(params.index)
+                        }
+                    }
+                })
+            ]);
+          }
+        }],
+        userTransaction:[
+        {
+          title: '订单ID',
+          key: 'ID'
+        },
+        {
+          title: '发布者',
+          key: 'publisher'
+        },
+        {
+          title: '数量',
+          key: 'amount'
+        },
+        {
+          title: '单价',
+          key: 'price'
+        },
+        {
+          title: '限额',
+          key: 'price'
+        },
+        {
+          title: '总额',
+          key: 'totalPrice'
+        },
+        {
+          title: '类别',
+          key: 'type'
+        },
+        {
+          title: '发布时间',
+          key: 'publishTime',
+          width: 120
+        },{
+          title: '操作',
+          key: 'dom',
+          width: 80
         }]
       }
     },
@@ -87,6 +225,7 @@
     },
     methods: {
       init(){
+        //初始化数据
         var that = this;
         switch(this.theHeader){
           case '交易管理':
@@ -107,10 +246,12 @@
           this.choose = 2;
           this.istradeAnother = true;
           this.isSuresearch = true;
+          this.isShowCoinSelect = false;
           this.getDataApi = that.$ip + '/deal1' + '?choose=' + this.choose + '&page=' + (this.page * this.limit) + '&limit=' + this.limit;
             break;
             case '交易信息':
           this.choose = 2;
+          this.isAddhangsell = true;
           this.columns = this.constCom.manageTable.userManage;
           this.getDataApi = that.$ip + '/show_me2' + '?choose=' + this.choose + '&page=' + (this.page * this.limit) + '&limit=' + this.limit;
             break;
@@ -130,6 +271,7 @@
         this.getData(this.getDataApi);
       },
        getData: function (theUrl) {
+        //获取数据
         switch(this.theHeader) {
           case '交易管理':
             this.getTradeData(theUrl);
@@ -157,6 +299,7 @@
         }
       },
       changeCoin(num) {
+        //选择交易货币
         if (num >= 1) {
           this.coinChoose = num;
         } else {
@@ -166,6 +309,7 @@
         this.init();
       },
       changeSearch(searchSort){
+        //选择查询方式
         if (searchSort != '订单号') {
           this.searchIsId = false;
         } else {
@@ -175,6 +319,84 @@
       },
       changetype(types){
         this.searchtype = types;
+      },
+      checkType(){
+        //挂售表单的输入检查
+        if(this.formItem.amount == ''){
+          this.$Message.info('请输入数量');
+        } else {
+          if (isNaN(parseFloat(this.formItem.amount))) {
+            this.$Message.info('Please input a number!');
+            this.formItem.amount = '';
+          } else {
+            this.formItem.amount = parseFloat(this.formItem.amount);
+          }
+        }
+        if(this.formItem.unitPrice == ''){
+          this.$Message.info('请输入单价')
+        } else {
+          if (isNaN(parseFloat(this.formItem.unitPrice))) {
+            this.$Message.info('Please input a number!');
+            this.formItem.unitPrice = '';
+          } else {
+            this.formItem.unitPrice = parseFloat(this.formItem.unitPrice);
+          }
+        }
+        if(this.formItem.limitPrice == ''){
+          this.$Message.info('请输入限额')
+        } else {
+          if (isNaN(parseFloat(this.formItem.limitPrice))) {
+            this.$Message.info('Please input a number!');
+            this.formItem.limitPrice = '';
+          } else {
+            this.formItem.limitPrice = parseFloat(this.formItem.limitPrice);
+          }
+        }
+       if ((this.formItem.amount != '') && (this.formItem.unitPrice != '') && (this.formItem.limitPrice != '')) {
+        return true;
+       }else{
+        return false;
+       }
+      },
+      addOK(){
+        //成功添加挂售信息
+        if ( this.checkType() ) {
+          var addHangData = {
+            type: parseInt(this.radioChoic),
+            amount: this.formItem.amount,
+            the_unit_price: this.formItem.unitPrice,
+            the_lower_transaction: this.formItem.limitPrice
+          };
+          var that = this;
+          this.$ajax.post( that.$ip + '/hang_sell/1', addHangData)
+          .then(function (res) {
+            if(res.data.code==200){
+              if (res.data.data != '') {}
+              that.datas.push(res.data.data);
+            } else {
+              that.$Message.info('已提交撮合 请等待交易');
+            }
+          })
+          .catch(function (error) {
+            console.log(error)
+            that.$Message.info('登录失败：'+error);
+          });
+          setTimeout(() => {
+              this.modal1 = false;
+          }, 2000);
+        }
+      },
+      AddClear(){
+        //清除表单
+        this.formItem.amount = '';
+        this.formItem.unitPrice = '';
+        this.formItem.limitPrice = '';
+        this.formItem.radio = '1';
+      },
+      addcancel(){
+        //取消正在添加挂售信息的操作
+        this.AddClear();
+        this.modal1 = false;
       },
       search(){
         if (this.searchValue == '') {
@@ -195,7 +417,22 @@
           this.getData(this.searchApi);
         };
       },
+      deleteData: function (index) {
+        // 删除用户
+        var that = this;
+        if(this.theHeader == '用户管理' && confirm('确认冻结用户' + this.datas[index].username + '的账号吗？')) {
+          this.$ajax(that.$ip + '/deal1?choose=3&name=' + this.datas[index].username + '&page=' + (this.page * this.limit) + '&limit=' + this.limit)
+          .then(function (res) {
+            res.data.code == 200? that.$api.alert('success', '冻结成功！'):that.$api.alert('error', '冻结失败！');
+            that.getData(that.getDataApi);
+          })
+          .catch(function (error) {
+            that.$api.alert('error', '冻结失败！' + error);
+          });
+        }
+      },
       getTradeData(getDataUrl){
+        //获取交易管理
         this.columns = this.constCom.manageTable.transactionManage;
         var that = this;
         this.$ajax.get(getDataUrl)
@@ -310,7 +547,8 @@
         });
       },
       usergetTradeData(getDataUrl){
-        this.columns = this.constCom.userTable.userTransaction;
+        //获取用户信息
+        this.columns = this.userTransaction;
         var that = this;
         this.$ajax.get(getDataUrl)
         .then(function(res) {
@@ -331,7 +569,7 @@
             }
             if (res.data.data) {
               that.datas = [];
-              that.totalPage = that.limit*(res.data.totalpage - 1 || 1);
+              that.totalPage = that.limit*(res.data.totalpage || 1);
               if (Array.isArray(res.data.data.info)) {
                 for (var key of res.data.data.info) {
                   console.log(key)
@@ -425,13 +663,12 @@
       },
       getUserData(getDataUrl) {
         // 获取用户信息
-        this.columns = this.constCom.manageTable.userManage;
+        this.columns = this.userManage;
         var that = this;
         this.$ajax(getDataUrl)
         .then(function (res) {
           var theJson = {};
           function createData (perData) {
-            console.log(perData)
             theJson = {
                 BCC: perData.BCC,
                 BTC: perData.BTC,
@@ -456,7 +693,6 @@
               that.totalPage = that.limit*(res.data.totalpage - 1 || 1);
               if (Array.isArray(res.data.data)) {
                 for(var key of res.data.data){
-                  console.log(key)
                   that.datas.push(createData(key));
                 }
               } else {
@@ -476,6 +712,7 @@
         });
       },
       changePage(num){
+        //跳转页数
         this.page = num;
         this.init()
       }
@@ -505,6 +742,9 @@
     margin-left: 10px;
     width: 30px;
     height: 30px;
+  }
+  .AddHangSell{
+    margin-right: 50px;
   }
   .ivuTable {
     width: 75vw;

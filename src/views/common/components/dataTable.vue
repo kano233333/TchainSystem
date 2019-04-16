@@ -3,7 +3,7 @@
     <div id="headAndSearch">
       <h1>{{theHeader}}</h1>
       <select v-model="coinChoose" @change="changeCoin" v-if="isShowCoinSelect">
-        <option v-for="(item, index) in coinList" :value="item.value">{{item.abName}}</option>
+        <option v-for="item in coinList" :value="item.value">{{item.abName}}</option>
       </select>
       <div id="search">
         <Search></Search>
