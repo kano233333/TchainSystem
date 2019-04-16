@@ -6,6 +6,7 @@
 
 <script>
 import dataTable from '../common/components/ivewTable.vue'
+// import dataTable from '../common/components/dataTable.vue'
 
 export default {
   data() {
