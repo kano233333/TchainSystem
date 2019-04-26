@@ -29,7 +29,7 @@
       <div id="loginInput">
         <div class="inputDiv">
           <Input type="text" v-model="numb" value="" placeholder="请输入手机号">
-          <Icon type="ios-contact" slot="prefix" />
+          <Icon type="ios-call" slot="prefix" />
           </Input>
         </div>
         <div class="inputDiv">
