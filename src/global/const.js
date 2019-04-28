@@ -161,11 +161,8 @@ const common = {
       title: '单价',
       key: 'price'
     },{
-      title: '限额',
-      key: 'limitPrice'
-    },{
-      title: '总额',
-      key: 'totalPrice'
+      title: '购买时间',
+      key: 'time_success'
     },{
       title: '发布时间',
       key: 'publishTime',
