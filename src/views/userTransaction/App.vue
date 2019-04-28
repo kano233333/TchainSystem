@@ -10,7 +10,7 @@ import dataTable from '../common/components/ivewTable.vue'
 export default {
   data() {
     return {
-      theHeader: '交易信息'
+      theHeader: '挂售信息'
     }
   },
   name: 'App',
