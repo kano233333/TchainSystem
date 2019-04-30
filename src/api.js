@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const ajax = axios.create({
-  baseURL: process.env.NODE_ENV === 'production' ? 'http://localhost:3001' : 'http://localhost:3001',
+  // baseURL: process.env.NODE_ENV === 'production' ? 'http://localhost:3001' : 'http://localhost:3001',
   headers: {
     'Content-Type': 'application/json'
     // 'Content-Type': 'application/x-www-form-urlencoded'
@@ -65,6 +65,6 @@ export default {
   install(Vue) {
     Vue.prototype.$api = Api;
     Vue.prototype.$ajax = ajax;
-    Vue.prototype.$ip = 'http://118.24.113.39:5000';
+    Vue.prototype.$ip = 'http://localhost:8081';
   }
 }
