@@ -35,7 +35,7 @@
           </Input>
         </div>
         <div class="inputDiv" v-show="yzmDiv">
-          <Input type="text" v-model="username2" value="" placeholder="请输入验证码">
+          <Input type="text" v-model="yzm" value="" placeholder="请输入验证码">
           <Icon type="ios-barcode" slot="prefix" />
           </Input>
         </div>
@@ -54,13 +54,13 @@
             </Input>
           </div>
           <div class="inputDiv">
-            <Input type="password" v-model="idCard" value="" placeholder="请输入身份证">
-            <Icon type="ios-key" slot="prefix" />
+            <Input v-model="idCard" value="" placeholder="请输入身份证">
+            <Icon type="ios-card" slot="prefix" />
             </Input>
           </div>
           <div class="inputDiv">
-            <Input type="password" v-model="realname" value="" placeholder="请输入真实姓名">
-            <Icon type="ios-key" slot="prefix" />
+            <Input v-model="realname" value="" placeholder="请输入真实姓名">
+            <Icon type="ios-contact" slot="prefix" />
             </Input>
           </div>
           <input type="button" class="login_btn" name="" value="立即注册" @click="register">
@@ -242,7 +242,8 @@
         yzmDiv:false,
         userInfoDiv:false,
         idCard:'',
-        realname:''
+        realname:'',
+        yzm:''
       }
     },
     components: {},
@@ -312,10 +313,12 @@
         var user = {
           username: this.username2,
           password: this.psd2,
-          number:this.numb
+          phone_number:this.numb,
+          real_name:this.realname,
+          id_card:this.idCard
         };
         var that = this;
-        this.$ajax.post(that.$ip + '/register', user)
+        this.$ajax.post(that.$ip + '/person', user)
           .then(function (res) {
             if(res.data.code==200){
               that.$Message.info('注册成功请登录');
@@ -328,13 +331,19 @@
       },
       sendCode:function(){
         var _this = this
-        // this.$ajax.get(this.$ip + '/veri?number='+this.numb).then(function(res){
+        this.$ajax.get(this.$ip + '/veri?number='+this.numb).then(function(res){
           _this.yzmDiv = true
-        // })
+          let data = res.data.split("}");
+          _this.code = data[data.length-1];
+        })
       },
       verificatCode:function(){
-        this.userInfoDiv = true;
-        this.yzmDiv = false;
+        if(this.yzm == this.code){
+          this.userInfoDiv = true;
+          this.yzmDiv = false;
+        }else{
+          this.$Message.info('验证码有误');
+        }
       }
     }
   }
