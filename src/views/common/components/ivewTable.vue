@@ -82,6 +82,7 @@
         choose: 1,
         typeChoose: 2,
         coinChoose: '',
+        listType: '2',
         changesearch: '请输入订单号搜索',
         searchIsId: true,
         isShowCoinSelect: true,
@@ -179,7 +180,7 @@
                     },
                     on: {
                         click: () => {
-                            this.remove(params.index)
+                            this.CancelAdd(params.index)
                         }
                     }
                 }, '取消')
@@ -190,18 +191,28 @@
           title: '操作',
           key: 'dom',
           render: (h, params) => {
+            const row = params.row.dom;
+            const color = row === 0 ? 'primary' : 'error';
+            const text = row === 0? '购买' : '售卖';
             return h('div', [
                 h('Button', {
                     props: {
-                        type: 'error',
-                        size: 'small'
+                        type: color,
+                        size: 'small',
                     },
                     on: {
                         click: () => {
-                            this.remove(params.index)
+                            if (row == 0) {
+                              //购买
+                              this.BuyerShop(params.index)
+                            } else {
+                              //售卖
+                              this.Sellersell(params.index)
+                            }
+                            
                         }
                     }
-                }, this.isSellBuy)
+                },text)
             ]);
           }
         }
@@ -234,13 +245,11 @@
           this.choose = 2;
           this.istradeAnother = true;
           this.isSuresearch = true;
-          this.isShowCoinSelect = false;
           this.getDataApi = that.$ip + '/deal1' + '?choose=' + this.choose + '&page=' + (this.page * this.limit) + '&limit=' + this.limit;
             break;
             case '交易信息':
-          this.choose = 2;
           this.isShowCoinSelect = false;
-          this.getDataApi = that.$ip + '/hang_sell/0' + this.coinChoose + '?choose=' + this.choose + '&page=' + (this.page * this.limit) + '&limit=' + this.limit;
+          this.getDataApi = that.$ip + '/hang_sell/0'  + '?choose=' + this.listType + '&page=' + (this.page * this.limit) + '&limit=' + this.limit;
             break;
             case '挂售信息':
           this.choose = 2;
@@ -305,13 +314,9 @@
         this.init();
       },
       changeType(num) {
-        //选择挂售货币
-        if (num >= 1) {
-          this.coinChoose = num;
-        } else {
-          this.coinChoose = '';
-        }
-        console.log(this.coinChoose);
+        //选择交易信息排列顺序
+        this.listType = num;
+        console.log(this.listType);
         this.init();
       },
       changeSearch(searchSort){
@@ -377,8 +382,9 @@
           this.$ajax.post( that.$ip + '/hang_sell/1', addHangData)
           .then(function (res) {
             if(res.data.code==200){
-              if (res.data.data != '') {}
-              that.datas.push(res.data.data);
+              if (res.data.data != '') {
+                that.datas.push(res.data.data);
+              }
             } else {
               that.$Message.info('已提交撮合 请等待挂售');
             }
@@ -389,7 +395,7 @@
           });
           setTimeout(() => {
               this.modal1 = false;
-          }, 2000);
+          }, 1000);
         }
       },
       AddClear(){
@@ -403,6 +409,51 @@
         //取消正在添加挂售信息的操作
         this.AddClear();
         this.modal1 = false;
+      },
+      CancelAdd(index){
+        var that = this;
+        if(this.theHeader == '挂售信息' && confirm('确认取消挂售信息？')) {
+          this.$ajax(that.$ip + '/cancel?ID=' + this.datas[index].ID)
+          .then(function (res) {
+            res.data.code == 200? that.$api.alert('success', '取消成功！'):that.$api.alert('error', '取消失败！');
+            that.getData(that.getDataApi);
+          })
+          .catch(function (error) {
+            that.$api.alert('error', '取消失败！' + error);
+          });
+        }
+      },
+      BuyerShop(index){
+        var that = this;
+        var databuy = {
+          ID: this.datas[index].ID,
+          amount: this.datas[index].amount
+        };
+        this.$ajax.post(that.$ip + '/hang_sell/6',databuy)
+        .then(function (res) {
+          console.log('buyer' + res)
+          res.data.code == 200? that.$api.alert('success', '购买成功！'):that.$api.alert('error', '购买失败！');
+          that.getData(that.getDataApi);
+        })
+        .catch(function (error) {
+          that.$api.alert('error', '购买失败！' + error);
+        });
+      },
+      Sellersell(index) {
+        var that = this;
+        var datasell = {
+          ID: this.datas[index].ID,
+          amount: this.datas[index].amount
+        };
+        this.$ajax(that.$ip + '/hang_sell/7',datasell)
+        .then(function (res) {
+          console.log(res)
+          res.data.code == 200? that.$api.alert('success', '出售成功！'):that.$api.alert('error', '出售失败！');
+          that.getData(that.getDataApi);
+        })
+        .catch(function (error) {
+          that.$api.alert('error', '出售失败！' + error);
+        });
       },
       search(){
         if (this.searchValue == '') {
@@ -576,9 +627,12 @@
                   type: key.type==0? '出售': '购买',
                   limitPrice: key.the_lower_transaction,
                   totalPrice: ((key.amount * 10) * (key.the_unit_price * 10) / 100).toFixed(2),
-                  publishTime: that.$api.formatTime(key.time?key.time:key.time_hang)
-                },
-                that.isSellBuy =  key.type==0? '出售': '购买',
+                  publishTime: that.$api.formatTime(key.time?key.time:key.time_hang),
+                  dom: key.type
+                }
+                // that.isSellBuy =  key.type==0? '出售': '购买',
+                // that.isSellBuy = res.data.data.info.type
+                // console.log(this.isSellBuy)
               that.datas.push(theJson);
               }
             } else {
@@ -610,7 +664,7 @@
                 amount: perData.amount,
                 username: perData.username,
                 totalPrice: parseFloat(perData.amount*perData.the_unit_price).toFixed(4),
-                finish: perData.is_finish,
+                finish: perData.is_finish==0? '未完成': '已完成',
                 price: perData.the_unit_price,
                 lowerprice: perData.the_lower_transaction,
                 type: perData.type==0? '买入': '卖出',

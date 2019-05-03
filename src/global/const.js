@@ -267,9 +267,9 @@ const common = {
       key: 'totalPrice',
       width: 120
     },{
-      title: '剩余',
+      title: '状态',
       key: 'finish',
-      width: 70
+      width: 90
     },{
       title: '类别',
       key: 'type'
