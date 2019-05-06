@@ -36,7 +36,7 @@ const common = {
       {
         name: '挂售信息',
         link: 'userHang',
-        icon: 'jiaoyi'
+        icon: 'gua'
       },
       {
         name: '买入信息',

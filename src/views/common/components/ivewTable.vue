@@ -426,8 +426,8 @@
       BuyerShop(index){
         var that = this;
         var databuy = {
-          ID: this.datas[index].ID,
-          amount: this.datas[index].amount
+          ID: this.datas[index].ID+'',
+          amount: this.datas[index].amount+''
         };
         this.$ajax.post(that.$ip + '/hang_sell/6',databuy)
         .then(function (res) {
@@ -442,10 +442,11 @@
       Sellersell(index) {
         var that = this;
         var datasell = {
-          ID: this.datas[index].ID,
-          amount: this.datas[index].amount
+          ID: this.datas[index].id+'',
+          amount: this.datas[index].amount+''
         };
-        this.$ajax(that.$ip + '/hang_sell/7',datasell)
+        console.log(this.datas)
+        this.$ajax.post(that.$ip + '/hang_sell/7',datasell)
         .then(function (res) {
           console.log(res)
           res.data.code == 200? that.$api.alert('success', '出售成功！'):that.$api.alert('error', '出售失败！');
