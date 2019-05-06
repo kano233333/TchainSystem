@@ -7,6 +7,11 @@
           <Option v-for="(item,index) in coinList" :value="item.value" :key="index">{{item.abName}}</Option>
         </Select>
       </div>
+      <div class="select" v-show="!isShowCoinSelect">
+        <Select v-model="modelType"  @on-change="changeType" style="width: 95px; margin-left: 5px; text-align: center;">
+          <Option v-for="(item,index) in TypeList" :value="item.value" :key="index">{{item.abName}}</Option>
+        </Select>
+      </div>
       <div class="searches">
         <Input :placeholder="changesearch" v-model="searchValue" v-show="istradeSearch">
             <Select @on-change="changeSearch" v-model="searchfome" slot="prepend" style="width: 80px; background-color: #2FCCEB; color: #fff;">
@@ -62,6 +67,7 @@
     data(){
       return {
         modelo: 0,
+        modelType: 2,
         modal1:false,
         addloading: true,
         searchfome: '订单号',
@@ -76,6 +82,7 @@
         choose: 1,
         typeChoose: 2,
         coinChoose: '',
+        listType: '2',
         changesearch: '请输入订单号搜索',
         searchIsId: true,
         isShowCoinSelect: true,
@@ -83,6 +90,7 @@
         istradeAnother: false,
         isSuresearch: false,
         isAddhangsell: false,
+        isSellBuy: '',
         coinList: [
         {
           name: '唐人链',
@@ -109,55 +117,36 @@
           abName: 'EOS',
           value: 4
         }],
+        TypeList: [
+        {
+          abName: '卖出交易',
+          value: 0
+        },
+        {
+          abName: '买入交易',
+          value: 1
+        },
+        {
+          abName: '所有交易',
+          value: 2
+        },
+        {
+          abName: '最新时间',
+          value: 3
+        },
+        {
+          abName: '价格从高到低',
+          value: 4
+        },{
+          abName: '价格从低到高',
+          value: 5
+        }],
         formItem: {
             amount: '',
             unitPrice: '',
             limitPrice: ''
         },
-        userManage:[
-        {
-          title: '用户名',
-          key: 'username',
-          width: 80
-        },{
-          title: '真实姓名',
-          key: 'real_name',
-        },{
-          title: '手机号',
-          key: 'phone',
-          width: 80
-        },{
-          title: '身份证号',
-          key: 'ID_card',
-        },{
-          title: '公钥',
-          key: 'public_key',
-        },{
-          title: '余额',
-          key: 'remaining',
-        },{
-          title: 'TRC',
-          key: 'Tang',
-        },{
-          title: 'BCC',
-          key: 'BCC',
-        },{
-          title: 'BTC',
-          key: 'BTC',
-        },{
-          title: 'EOS',
-          key: 'EOS',
-        },{
-          title: 'ETH',
-          key: 'ETH',
-        },{
-          title: '会员等级',
-          key: 'vipLevel'
-        },{
-          title: '注册时间',
-          key: 'regiestTime',
-          width: 100
-        },{
+        DOMD:{
           title: '操作',
           key: 'dom',
           width: 60,
@@ -178,44 +167,55 @@
                 })
             ]);
           }
-        }],
-        userTransaction:[
-        {
-          title: '订单ID',
-          key: 'ID'
         },
-        {
-          title: '发布者',
-          key: 'username'
+        DOMC:{
+          title: '操作',
+          key: 'dom',
+          render: (h, params) => {
+            return h('div', [
+                h('Button', {
+                    props: {
+                        type: 'error',
+                        size: 'small'
+                    },
+                    on: {
+                        click: () => {
+                            this.CancelAdd(params.index)
+                        }
+                    }
+                }, '取消')
+            ]);
+          }
         },
-        {
-          title: '数量',
-          key: 'amount'
-        },
-        {
-          title: '单价',
-          key: 'price'
-        },
-        {
-          title: '限额',
-          key: 'lowerprice'
-        },
-        {
-          title: '总额',
-          key: 'totalPrice'
-        },{
-          title: '剩余',
-          key: 'finish',
-          width: 70
-        },{
-          title: '类别',
-          key: 'type'
-        },
-        {
-          title: '时间',
-          key: 'time',
-          width: 160
-        }]
+        DOMS:{
+          title: '操作',
+          key: 'dom',
+          render: (h, params) => {
+            const row = params.row.dom;
+            const color = row === 0 ? 'primary' : 'error';
+            const text = row === 0? '购买' : '售卖';
+            return h('div', [
+                h('Button', {
+                    props: {
+                        type: color,
+                        size: 'small',
+                    },
+                    on: {
+                        click: () => {
+                            if (row == 0) {
+                              //购买
+                              this.BuyerShop(params.index)
+                            } else {
+                              //售卖
+                              this.Sellersell(params.index)
+                            }
+                            
+                        }
+                    }
+                },text)
+            ]);
+          }
+        }
       }
     },
     props: ['theHeader'],
@@ -227,7 +227,7 @@
         //初始化数据
         var that = this;
         switch(this.theHeader){
-          case '挂售管理':
+          case '交易管理':
           this.choose = 2;
           this.istradeSearch = true;
           this.isSuresearch = true;
@@ -245,8 +245,11 @@
           this.choose = 2;
           this.istradeAnother = true;
           this.isSuresearch = true;
-          this.isShowCoinSelect = false;
           this.getDataApi = that.$ip + '/deal1' + '?choose=' + this.choose + '&page=' + (this.page * this.limit) + '&limit=' + this.limit;
+            break;
+            case '交易信息':
+          this.isShowCoinSelect = false;
+          this.getDataApi = that.$ip + '/hang_sell/0'  + '?choose=' + this.listType + '&page=' + (this.page * this.limit) + '&limit=' + this.limit;
             break;
             case '挂售信息':
           this.choose = 2;
@@ -257,12 +260,12 @@
             case '买入信息':
           this.choose = 2;
           this.columns = this.constCom.manageTable.userManage;
-          this.getDataApi = that.$ip + '/transcation/1' + '?page=' + (this.page * this.limit) + '&limit=' + this.limit;
+          this.getDataApi = that.$ip + '/transcation/1' + '?page=' + (this.page) + '&limit=' + this.limit;
             break;
             case '卖出信息':
           this.choose = 2;
           this.columns = this.constCom.manageTable.userManage;
-          this.getDataApi = that.$ip + '/transcation/0' + '?choose=' + this.choose + '&page=' + (this.page * this.limit) + '&limit=' + this.limit;
+          this.getDataApi = that.$ip + '/transcation/0' + '?page=0' + '&limit=' + this.limit;
             break;
           default:
             break;
@@ -272,7 +275,7 @@
        getData: function (theUrl) {
         //获取数据
         switch(this.theHeader) {
-          case '挂售管理':
+          case '交易管理':
             this.getTradeData(theUrl);
             break;
           case '买入管理':
@@ -284,8 +287,11 @@
           case '用户管理':
             this.getUserData(theUrl);
             break;
-            case '挂售信息':
+          case '交易信息':
             this.usergetTradeData(theUrl);
+            break;
+            case '挂售信息':
+            this.usergetHang(theUrl);
             break;
           case '买入信息':
             this.usergetBuyData(theUrl);
@@ -305,6 +311,12 @@
           this.coinChoose = '';
         }
         console.log(this.coinChoose);
+        this.init();
+      },
+      changeType(num) {
+        //选择交易信息排列顺序
+        this.listType = num;
+        console.log(this.listType);
         this.init();
       },
       changeSearch(searchSort){
@@ -361,17 +373,18 @@
         //成功添加挂售信息
         if ( this.checkType() ) {
           var addHangData = {
-            type: parseInt(this.radioChoic),
-            amount: this.formItem.amount,
-            the_unit_price: this.formItem.unitPrice,
-            the_lower_transaction: this.formItem.limitPrice
+            type: this.radioChoic+'',
+            amount: this.formItem.amount+'',
+            the_unit_price: this.formItem.unitPrice+'',
+            the_lower_transaction: this.formItem.limitPrice+''
           };
           var that = this;
           this.$ajax.post( that.$ip + '/hang_sell/1', addHangData)
           .then(function (res) {
             if(res.data.code==200){
-              if (res.data.data != '') {}
-              that.datas.push(res.data.data);
+              if (res.data.data != '') {
+                that.datas.push(res.data.data);
+              }
             } else {
               that.$Message.info('已提交撮合 请等待挂售');
             }
@@ -382,7 +395,7 @@
           });
           setTimeout(() => {
               this.modal1 = false;
-          }, 2000);
+          }, 1000);
         }
       },
       AddClear(){
@@ -397,6 +410,51 @@
         this.AddClear();
         this.modal1 = false;
       },
+      CancelAdd(index){
+        var that = this;
+        if(this.theHeader == '挂售信息' && confirm('确认取消挂售信息？')) {
+          this.$ajax(that.$ip + '/cancel?ID=' + this.datas[index].ID)
+          .then(function (res) {
+            res.data.code == 200? that.$api.alert('success', '取消成功！'):that.$api.alert('error', '取消失败！');
+            that.getData(that.getDataApi);
+          })
+          .catch(function (error) {
+            that.$api.alert('error', '取消失败！' + error);
+          });
+        }
+      },
+      BuyerShop(index){
+        var that = this;
+        var databuy = {
+          ID: this.datas[index].ID,
+          amount: this.datas[index].amount
+        };
+        this.$ajax.post(that.$ip + '/hang_sell/6',databuy)
+        .then(function (res) {
+          console.log('buyer' + res)
+          res.data.code == 200? that.$api.alert('success', '购买成功！'):that.$api.alert('error', '购买失败！');
+          that.getData(that.getDataApi);
+        })
+        .catch(function (error) {
+          that.$api.alert('error', '购买失败！' + error);
+        });
+      },
+      Sellersell(index) {
+        var that = this;
+        var datasell = {
+          ID: this.datas[index].ID,
+          amount: this.datas[index].amount
+        };
+        this.$ajax(that.$ip + '/hang_sell/7',datasell)
+        .then(function (res) {
+          console.log(res)
+          res.data.code == 200? that.$api.alert('success', '出售成功！'):that.$api.alert('error', '出售失败！');
+          that.getData(that.getDataApi);
+        })
+        .catch(function (error) {
+          that.$api.alert('error', '出售失败！' + error);
+        });
+      },
       search(){
         if (this.searchValue == '') {
           this.$api.alert('warning', '请输入搜索内容！');
@@ -404,7 +462,7 @@
           var that = this;
           // 按订单或用户名搜索
           switch(this.theHeader) {
-            case '挂售管理':
+            case '交易管理':
               that.searchApi = that.searchIsId? that.$ip + '/search' + this.coinChoose + '?ID=' + parseInt(this.searchValue) + '&choose=' + this.searchtype:that.$ip + '/deal2' + this.coinChoose + '?choose=3' + '&name=' + this.searchValue + '&page=0&limit=10';
               break;
             case '用户管理':
@@ -431,7 +489,7 @@
         }
       },
       getTradeData(getDataUrl){
-        //获取挂售管理
+        //获取交易管理
         this.columns = this.constCom.manageTable.transactionManage;
         var that = this;
         this.$ajax.get(getDataUrl)
@@ -545,9 +603,56 @@
           that.$api.alert('error', '信息获取失败，请检查你的网络！');
         });
       },
-      usergetTradeData(getDataUrl){
+      usergetTradeData(getDataUrl) {
+        this.columns = this.constCom.userTable.userTransaction;
+        if (this.columns[this.columns.length -1].key != 'dom') {
+          this.columns.push(this.DOMS);
+        }
+        // 获取挂售买入信息
+        var that = this;
+        this.$ajax(getDataUrl)
+        .then(function (res) {
+          if (res.data.code == 200) {
+            if (res.data.data.info != undefined && res.data.data.info != '' && res.data.data.info != []) {
+              that.totalPage = that.limit*(res.data.totalpage - 1 || 1);
+              console.log(res);
+              that.datas = [];
+              var theJson = {};
+              for(var key of res.data.data.info){
+                theJson = {
+                  id: key.id || that.$refs.searchKey.value,
+                  publisher: key.username,
+                  amount: key.amount,
+                  price: key.the_unit_price,
+                  type: key.type==0? '出售': '购买',
+                  limitPrice: key.the_lower_transaction,
+                  totalPrice: ((key.amount * 10) * (key.the_unit_price * 10) / 100).toFixed(2),
+                  publishTime: that.$api.formatTime(key.time?key.time:key.time_hang),
+                  dom: key.type
+                }
+                // that.isSellBuy =  key.type==0? '出售': '购买',
+                // that.isSellBuy = res.data.data.info.type
+                // console.log(this.isSellBuy)
+              that.datas.push(theJson);
+              }
+            } else {
+              that.$api.alert('error', '找不到该条挂售！');
+            };
+          } else {
+            that.$api.alert('error', '信息获取失败！');
+          };
+        })
+        .catch(function (error) {
+          console.log(error)
+          that.$api.alert('error', '信息获取失败，请检查你的网络！');
+        });
+      },
+      usergetHang(getDataUrl){
         //获取用户挂售信息
-        this.columns = this.userTransaction;
+        this.columns = this.constCom.userTable.userHang;
+        if (this.columns[this.columns.length -1].key != 'dom') {
+          this.columns.push(this.DOMC);
+        }
         var that = this;
         this.$ajax.get(getDataUrl)
         .then(function(res) {
@@ -559,7 +664,7 @@
                 amount: perData.amount,
                 username: perData.username,
                 totalPrice: parseFloat(perData.amount*perData.the_unit_price).toFixed(4),
-                finish: perData.is_finish,
+                finish: perData.is_finish==0? '未完成': '已完成',
                 price: perData.the_unit_price,
                 lowerprice: perData.the_lower_transaction,
                 type: perData.type==0? '买入': '卖出',
@@ -607,7 +712,7 @@
                   publisher: key.username,
                   amount: key.need_amount,
                   price: key.the_unit_price,
-                  time_success: key.time_success,
+                  time_success: that.$api.formatTime(key.time?key.time:key.time_success),
                   publishTime: that.$api.formatTime(key.time?key.time:key.time_hang)
                 }
               that.datas.push(theJson);
@@ -631,20 +736,19 @@
         this.$ajax(getDataUrl)
         .then(function (res) {
           if (res.data.code == 200) {
+            console.log(res.data.data.info)
             if (res.data.data.info != undefined && res.data.data.info != '' && res.data.data.info != []) {
               that.datas = [];
               that.totalPage = that.limit*(res.data.totalpage - 1 || 1);
-              console.log(res);
               var theJson = {};
               for(var key of res.data.data.info){
                 theJson = {
-                  id: key.id || that.$refs.searchKey.value,
+                  id: key.record_id,
                   publisher: key.username,
-                  amount: key.amount,
+                  amount: key.need_amount,
                   price: key.the_unit_price,
-                  limitPrice: key.the_lower_transaction,
-                  totalPrice: ((key.amount * 10) * (key.the_unit_price * 10) / 100).toFixed(2),
-                  publishTime: that.$api.formatTime(key.time?key.time:key.time_hang)
+                  publishTime: that.$api.formatTime(key.time?key.time:key.time_hang),
+                  time_shop: that.$api.formatTime(key.time?key.time:key.time_success)
                 }
                 that.datas.push(theJson);
               }
@@ -661,7 +765,11 @@
       },
       getUserData(getDataUrl) {
         // 获取用户信息
-        this.columns = this.userManage;
+        // this.columns = [];
+        this.columns = this.constCom.manageTable.userManage;
+        if (this.columns[this.columns.length -1].key != 'dom') {
+          this.columns.push(this.DOMD);
+        }
         var that = this;
         this.$ajax(getDataUrl)
         .then(function (res) {

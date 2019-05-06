@@ -12,6 +12,7 @@ import userCenter from '../views/userCenter/router'
 import userBuy from '../views/userBuy/router'
 import userSell from '../views/userSell/router'
 import userTransaction from '../views/userTransaction/router'
+import userHang from '../views/userHang/router'
 import KLine from '../views/KLine/router'
 
 Vue.use(Router)
@@ -32,7 +33,8 @@ export default new Router({
 	...userBuy,
 	...userSell,
 	...userTransaction,
-	...KLine
+	...KLine,
+	...userHang
 	// ...complainManage
 	]
 })
