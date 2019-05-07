@@ -441,7 +441,7 @@
         var that = this;
         var databuy = {
           ID: this.datas[index].id + '',
-          amount: this.writeamount + ''
+          amount: this.writeamount + '',
           ID: this.datas[index].ID+'',
           amount: this.datas[index].amount+''
         };
@@ -460,9 +460,6 @@
         var datasell = {
           ID: this.datas[index].id + '',
           amount: this.writeamount + ''
-        };
-          ID: this.datas[index].id+'',
-          amount: this.datas[index].amount+''
         };
         console.log(this.datas)
         this.$ajax.post(that.$ip + '/hang_sell/7',datasell)
