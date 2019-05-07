@@ -28,7 +28,7 @@
       </div>
       <div class="AddHangSell" v-if="isAddhangsell">
         <Button type="primary" @click="modal1 = true">添加挂售信息</Button>
-        <Modal v-model="modal1" title="请发布您的挂售信息" :loading="addloading" @on-cancel="AddClear" :footer-hide="true" width="320">
+        <Modal v-model="modal1"  title="请发布您的挂售信息" :loading="addloading" @on-cancel="AddClear" :footer-hide="true" width="320">
             <Form :model="formItem" :label-width="50">
               <FormItem label="数量">
                   <Input v-model="formItem.amount" placeholder="请输入数量"></Input>
@@ -55,6 +55,10 @@
     </div>
     <div class="ivuTable">
        <Table size="small" :columns="columns" :data="datas"></Table>
+
+       <Modal v-model="modal2" title="请输入交易数量" width="320" @on-ok="amountOK">
+         <Input v-model="writeamount" placeholder="请输入交易数量"/>
+       </Modal>
     </div>
     <div class="ivuPage">
       <Page :total="totalPage" :current="page" @on-change="changePage" show-elevator></Page>
@@ -69,6 +73,10 @@
         modelo: 0,
         modelType: 2,
         modal1:false,
+        modal2:false,
+        writeamount: '',
+        writeRow: '',
+        writeIndex: '',
         addloading: true,
         searchfome: '订单号',
         searchtype: '1',
@@ -202,14 +210,7 @@
                     },
                     on: {
                         click: () => {
-                            if (row == 0) {
-                              //购买
-                              this.BuyerShop(params.index)
-                            } else {
-                              //售卖
-                              this.Sellersell(params.index)
-                            }
-                            
+                          this.WriteAmount(row,params.index)
                         }
                     }
                 },text)
@@ -249,13 +250,13 @@
             break;
             case '交易信息':
           this.isShowCoinSelect = false;
-          this.getDataApi = that.$ip + '/hang_sell/0'  + '?choose=' + this.listType + '&page=' + (this.page * this.limit) + '&limit=' + this.limit;
+          this.getDataApi = that.$ip + '/hang_sell/0'  + '?choose=' + this.listType + '&page=' + (this.page -1) + '&limit=' + this.limit;
             break;
             case '挂售信息':
           this.choose = 2;
           this.isAddhangsell = true;
           this.columns = this.constCom.manageTable.userManage;
-          this.getDataApi = that.$ip + '/show_me2' + '?choose=' + this.choose + '&page=' + (this.page * this.limit) + '&limit=' + this.limit;
+          this.getDataApi = that.$ip + '/show_me2' + '?choose=' + this.choose + '&page=' + (this.page-1) + '&limit=' + this.limit;
             break;
             case '买入信息':
           this.choose = 2;
@@ -386,12 +387,11 @@
                 that.datas.push(res.data.data);
               }
             } else {
-              that.$Message.info('已提交撮合 请等待挂售');
+              that.$Message.success('已提交撮合 请等待挂售');
             }
           })
           .catch(function (error) {
-            console.log(error)
-            that.$Message.info('登录失败：'+error);
+            that.$Message.error('添加失败：');
           });
           setTimeout(() => {
               this.modal1 = false;
@@ -415,33 +415,52 @@
         if(this.theHeader == '挂售信息' && confirm('确认取消挂售信息？')) {
           this.$ajax(that.$ip + '/cancel?ID=' + this.datas[index].ID)
           .then(function (res) {
-            res.data.code == 200? that.$api.alert('success', '取消成功！'):that.$api.alert('error', '取消失败！');
+            res.data.code == 200? that.$Message.success('取消成功！'):that.$Message.warning('error', '取消失败！');
             that.getData(that.getDataApi);
           })
           .catch(function (error) {
-            that.$api.alert('error', '取消失败！' + error);
+            that.$Message.error('error', '取消失败！' + error);
           });
         }
+      },
+      WriteAmount(row,index){
+        this.modal2 = true;
+        this.writeRow = row;
+        this.writeIndex = index;
+      },
+      amountOK(){
+        if (this.writeRow == 0) {
+            //购买
+            this.BuyerShop(this.writeIndex)
+          } else {
+            //售卖
+            this.Sellersell(this.writeIndex)
+          }
       },
       BuyerShop(index){
         var that = this;
         var databuy = {
+          ID: this.datas[index].id + '',
+          amount: this.writeamount + ''
           ID: this.datas[index].ID+'',
           amount: this.datas[index].amount+''
         };
         this.$ajax.post(that.$ip + '/hang_sell/6',databuy)
         .then(function (res) {
           console.log('buyer' + res)
-          res.data.code == 200? that.$api.alert('success', '购买成功！'):that.$api.alert('error', '购买失败！');
+          res.data.code == 200? that.$Message.success('购买成功！'):that.$Message.warning('购买失败！');
           that.getData(that.getDataApi);
         })
         .catch(function (error) {
-          that.$api.alert('error', '购买失败！' + error);
+          that.$Message.error('购买失败！' + error);
         });
       },
       Sellersell(index) {
         var that = this;
         var datasell = {
+          ID: this.datas[index].id + '',
+          amount: this.writeamount + ''
+        };
           ID: this.datas[index].id+'',
           amount: this.datas[index].amount+''
         };
@@ -449,16 +468,16 @@
         this.$ajax.post(that.$ip + '/hang_sell/7',datasell)
         .then(function (res) {
           console.log(res)
-          res.data.code == 200? that.$api.alert('success', '出售成功！'):that.$api.alert('error', '出售失败！');
+          res.data.code == 200? that.$Message.success('出售成功！'):that.$Message.warning('出售失败！');
           that.getData(that.getDataApi);
         })
         .catch(function (error) {
-          that.$api.alert('error', '出售失败！' + error);
+          that.$Message.error('出售失败！' + error);
         });
       },
       search(){
         if (this.searchValue == '') {
-          this.$api.alert('warning', '请输入搜索内容！');
+          this.$Message.warning('请输入搜索内容！');
         } else {
           var that = this;
           // 按订单或用户名搜索
@@ -481,11 +500,11 @@
         if(this.theHeader == '用户管理' && confirm('确认冻结用户' + this.datas[index].username + '的账号吗？')) {
           this.$ajax(that.$ip + '/deal1?choose=3&name=' + this.datas[index].username + '&page=' + (this.page * this.limit) + '&limit=' + this.limit)
           .then(function (res) {
-            res.data.code == 200? that.$api.alert('success', '冻结成功！'):that.$api.alert('error', '冻结失败！');
+            res.data.code == 200? that.$Message.success('冻结成功！'):that.$Message.warning('冻结失败！');
             that.getData(that.getDataApi);
           })
           .catch(function (error) {
-            that.$api.alert('error', '冻结失败！' + error);
+            that.$Message.error('冻结失败！' + error);
           });
         }
       },
@@ -522,10 +541,10 @@
                 that.datas.push(createData(res.data.data.info));
               };
             } else {
-              that.$api.alert('error', res.data.msg);
+              that.$Message.warning(res.data.msg);
             };
           } else {
-            that.$api.alert('error', '信息获取失败！');
+            that.$Message.error('信息获取失败！');
           };
         })
         .catch(function(error) {
@@ -558,15 +577,15 @@
               that.datas.push(theJson);
               }
             } else {
-              that.$api.alert('error', '找不到该条挂售！');
+              that.$Message.warning('找不到该条挂售！');
             };
           } else {
-            that.$api.alert('error', '信息获取失败！');
+            that.$Message.error('信息获取失败！');
           };
         })
         .catch(function (error) {
           console.log(error)
-          that.$api.alert('error', '信息获取失败，请检查你的网络！');
+          that.$Message.error('信息获取失败，请检查你的网络！');
         });
       },
       getSellData(getDataUrl) {
@@ -594,14 +613,14 @@
                 that.datas.push(theJson);
               }
             } else {
-              that.$api.alert('error', '找不到该条挂售！');
+              that.$Message.warning('找不到该条挂售！');
             };
           } else {
-            that.$api.alert('error', '信息获取失败！');
+            that.$Message.error('信息获取失败！');
           };
         })
         .catch(function (error) {
-          that.$api.alert('error', '信息获取失败，请检查你的网络！');
+          that.$Message.error('信息获取失败，请检查你的网络！');
         });
       },
       usergetTradeData(getDataUrl) {
@@ -615,7 +634,7 @@
         .then(function (res) {
           if (res.data.code == 200) {
             if (res.data.data.info != undefined && res.data.data.info != '' && res.data.data.info != []) {
-              that.totalPage = that.limit*(res.data.totalpage - 1 || 1);
+              that.totalPage = that.limit*(res.data.totalpage|| 1);
               console.log(res);
               that.datas = [];
               var theJson = {};
@@ -631,21 +650,18 @@
                   publishTime: that.$api.formatTime(key.time?key.time:key.time_hang),
                   dom: key.type
                 }
-                // that.isSellBuy =  key.type==0? '出售': '购买',
-                // that.isSellBuy = res.data.data.info.type
-                // console.log(this.isSellBuy)
               that.datas.push(theJson);
               }
             } else {
-              that.$api.alert('error', '找不到该条挂售！');
+              that.$Message.warning('找不到该条挂售！');
             };
           } else {
-            that.$api.alert('error', '信息获取失败！');
+            that.$Message.error('信息获取失败！');
           };
         })
         .catch(function (error) {
           console.log(error)
-          that.$api.alert('error', '信息获取失败，请检查你的网络！');
+          that.$Message.error('信息获取失败，请检查你的网络！');
         });
       },
       usergetHang(getDataUrl){
@@ -684,10 +700,10 @@
                 that.datas.push(createData(res.data.data.info));
               };
             } else {
-              that.$api.alert('error', res.data.msg);
+              that.$Message.error(res.data.msg);
             };
           } else {
-            that.$api.alert('error', '信息获取失败！');
+            that.$Message.error('信息获取失败！');
           };
         })
         .catch(function(error) {
@@ -719,15 +735,15 @@
               that.datas.push(theJson);
               }
             } else {
-              that.$api.alert('error', '找不到该条挂售！');
+              that.$Message.warning('找不到该条挂售！');
             };
           } else {
-            that.$api.alert('error', '信息获取失败！');
+            that.$Message.error('信息获取失败！');
           };
         })
         .catch(function (error) {
           console.log(error)
-          that.$api.alert('error', '信息获取失败，请检查你的网络！');
+          that.$Message.error('信息获取失败，请检查你的网络！');
         });
       },
       usergetSellData(getDataUrl) {
@@ -754,14 +770,14 @@
                 that.datas.push(theJson);
               }
             } else {
-              that.$api.alert('error', '找不到该条挂售！');
+              that.$Message.warning('找不到该条挂售！');
             };
           } else {
-            that.$api.alert('error', '信息获取失败！');
+            that.$Message.error('信息获取失败！');
           };
         })
         .catch(function (error) {
-          that.$api.alert('error', '信息获取失败，请检查你的网络！');
+          that.$Message.error('信息获取失败，请检查你的网络！');
         });
       },
       getUserData(getDataUrl) {
@@ -806,16 +822,16 @@
                 that.datas.push(createData(res.data.data));
               };
             } else {
-              that.$api.alert('error', res.data.msg);
+              that.$Message.warning(res.data.msg);
             };
             
           } else {
-            that.$api.alert('error', '获取用户信息失败！');
+            that.$Message.error('获取用户信息失败！');
           };
         })
         .catch(function (error) {
           console.log(error)
-          that.$api.alert('error', '获取用户信息失败，请检查你的网络！');
+          that.$Message.error('获取用户信息失败，请检查你的网络！');
         });
       },
       changePage(num){
