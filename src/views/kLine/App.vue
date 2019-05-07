@@ -193,8 +193,7 @@
 
 <style scoped>
   #kcharts {
-    width:80%;
-    height:500px;
-    /*margin:50px;*/
+    width:calc(100% - 220px);
+    height:100vh;
   }
 </style>

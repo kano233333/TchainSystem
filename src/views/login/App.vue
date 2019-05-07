@@ -1,9 +1,12 @@
 <template>
   <div class="login">
+    <div id="top">
+      <img class="logo" src="../../assets/portrait.png">
+      <p>唐人星交易平台</p>
+    </div>
     <div id="loginDiv" v-show="isLogin">
       <div id="headDiv">
-        <h3>后台登录</h3>
-        <p>Login To System</p>
+        <h3>登录</h3>
       </div>
       <div id="loginInput">
         <div class="inputDiv">
@@ -23,8 +26,7 @@
 
     <div id="loginDiv" v-show="!isLogin">
       <div id="headDiv">
-        <h3>后台注册</h3>
-        <p>Register To System</p>
+        <h3>注册</h3>
       </div>
       <div id="loginInput">
         <div class="inputDiv">
@@ -32,19 +34,40 @@
           <Icon type="ios-call" slot="prefix" />
           </Input>
         </div>
-        <div class="inputDiv">
-          <Input type="text" v-model="username2" value="" placeholder="请输入账号">
-          <Icon type="ios-contact" slot="prefix" />
+        <div class="inputDiv" v-show="yzmDiv">
+          <Input type="text" v-model="yzm" value="" placeholder="请输入验证码">
+          <Icon type="ios-barcode" slot="prefix" />
           </Input>
         </div>
-        <div class="inputDiv">
-          <Input type="password" v-model="psd2" value="" placeholder="请输入密码">
-          <Icon type="ios-key" slot="prefix" />
-          </Input>
+        <input v-if="!yzmDiv && !userInfoDiv" type="button" class="login_btn" value="发送验证码" @click="sendCode" />
+        <input v-if="yzmDiv" type="button" class="login_btn" value="验证" @click="verificatCode " />
+
+        <div v-if="userInfoDiv">
+          <div class="inputDiv">
+            <Input type="text" v-model="username2" value="" placeholder="请输入账号">
+              <Icon type="ios-contact" slot="prefix" />
+            </Input>
+          </div>
+          <div class="inputDiv">
+            <Input type="password" v-model="psd2" value="" placeholder="请输入密码">
+              <Icon type="ios-key" slot="prefix" />
+            </Input>
+          </div>
+          <div class="inputDiv">
+            <Input v-model="idCard" value="" placeholder="请输入身份证">
+            <Icon type="ios-card" slot="prefix" />
+            </Input>
+          </div>
+          <div class="inputDiv">
+            <Input v-model="realname" value="" placeholder="请输入真实姓名">
+            <Icon type="ios-contact" slot="prefix" />
+            </Input>
+          </div>
+          <input type="button" class="login_btn" name="" value="立即注册" @click="register">
+          <input type="button" class="login_btn" name="" value="登录" @click="shift">
         </div>
-        <input type="button" class="login_btn" name="" value="立即注册" @click="register">
-        <input type="button" class="login_btn" name="" value="登录" @click="shift">
       </div>
+
     </div>
     <div id="bottom">
         <div class="waveTop"></div>
@@ -68,7 +91,7 @@
   .login {
     position: absolute;
     width: 100%;
-    height: 100%;
+    min-height: 100%;
     background-image: linear-gradient(to top, #80B5E8 20%, #BDE3FE 80%);
     background-image: -webkit-linear-gradient(bottom, #80B5E8 20%, #BDE3FE 80%); /* Safari 5.1 to 6.0 */
     background-image: -o-linear-gradient(top, #80B5E8 20%, #BDE3FE 80%); /* Opera 11.1 to 12.0 */
@@ -76,8 +99,7 @@
   }
   #loginDiv {
     width: 400px;
-    margin: 0 auto;
-    margin-top: 20vh;
+    margin: 100px auto 100px auto;
     background: #fff;
     border-radius: 10px;
     position: relative;
@@ -86,7 +108,7 @@
   }
   #headDiv {
     width: 100%;
-    height: 130px;
+    height: 100px;
     background: #1288FB;
     text-align: center;
     color: #fff;
@@ -186,6 +208,26 @@
     background-position: 0 bottom;
     transform-origin: center bottom;
   }
+  #top {
+    position:fixed;
+    top:0;
+    left:0;
+    background-color: #fff;
+    padding:3px 15px;
+    box-shadow: 0 2px 5px cadetblue;
+    width:100vw;
+    z-index:0;
+  }
+  #top>p {
+    display: inline-block;
+    font-size:22px;
+    position:relative;
+    top:-15px;
+  }
+  .logo {
+    width:50px;
+    height:50px;
+  }
 </style>
 <script>
   export default {
@@ -196,7 +238,12 @@
         isLogin:true,
         username2:'',
         psd2:'',
-        numb:''
+        numb:'',
+        yzmDiv:false,
+        userInfoDiv:false,
+        idCard:'',
+        realname:'',
+        yzm:''
       }
     },
     components: {},
@@ -266,10 +313,12 @@
         var user = {
           username: this.username2,
           password: this.psd2,
-          number:this.numb
+          phone_number:this.numb,
+          real_name:this.realname,
+          id_card:this.idCard
         };
         var that = this;
-        this.$ajax.post(that.$ip + '/register', user)
+        this.$ajax.post(that.$ip + '/person', user)
           .then(function (res) {
             if(res.data.code==200){
               that.$Message.info('注册成功请登录');
@@ -279,6 +328,22 @@
           .catch(function (error) {
             that.$Message.info('登录失败：'+error);
           });
+      },
+      sendCode:function(){
+        var _this = this
+        this.$ajax.get(this.$ip + '/veri?number='+this.numb).then(function(res){
+          _this.yzmDiv = true
+          let data = res.data.split("}");
+          _this.code = data[data.length-1];
+        })
+      },
+      verificatCode:function(){
+        if(this.yzm == this.code){
+          this.userInfoDiv = true;
+          this.yzmDiv = false;
+        }else{
+          this.$Message.info('验证码有误');
+        }
       }
     }
   }
