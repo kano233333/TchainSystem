@@ -54,7 +54,7 @@
       </div>
     </div>
     <div class="ivuTable">
-       <Table size="small" :columns="columns" :data="datas"></Table>
+       <Table size="small" :columns="columns" :data="datas" v-if="aaa"></Table>
 
        <Modal v-model="modal2" title="请输入交易数量" width="320" @on-ok="amountOK">
          <Input v-model="writeamount" placeholder="请输入交易数量"/>
@@ -71,6 +71,7 @@
     data(){
       return {
         modelo: 0,
+        aaa:true,
         modelType: 2,
         modal1:false,
         modal2:false,
@@ -383,16 +384,15 @@
           this.$ajax.post( that.$ip + '/hang_sell/1', addHangData)
           .then(function (res) {
             if(res.data.code==200){
-              if (res.data.data != '') {
-                that.datas.push(res.data.data);
+              if (res.data.data.id==null || res.data.data.id) {
+                that.init();
               }
-            } else {
-              that.$Message.success('已提交撮合 请等待挂售');
             }
+            that.$Message.success(res.data.msg);
           })
-          .catch(function (error) {
-            that.$Message.error('添加失败：');
-          });
+          // .catch(function (error) {
+          //   that.$Message.error('添加失败：');
+          // });
           setTimeout(() => {
               this.modal1 = false;
           }, 1000);
@@ -821,7 +821,7 @@
             } else {
               that.$Message.warning(res.data.msg);
             };
-            
+
           } else {
             that.$Message.error('获取用户信息失败！');
           };

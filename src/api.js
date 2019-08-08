@@ -57,7 +57,7 @@ const ajax = axios.create({
         theBody.removeChild(theDiv);
       }, 800);
     }, 1000);
-    
+
   }
  }
 
@@ -65,6 +65,6 @@ export default {
   install(Vue) {
     Vue.prototype.$api = Api;
     Vue.prototype.$ajax = ajax;
-    Vue.prototype.$ip = 'http://localhost:8081';
+    Vue.prototype.$ip = 'http://localhost:8080';
   }
 }
